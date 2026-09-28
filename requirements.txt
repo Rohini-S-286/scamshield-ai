@@ -4,5 +4,5 @@ scikit-learn
 joblib
 streamlit
 pillow
-easyocr
+pytesseract
 plotly
