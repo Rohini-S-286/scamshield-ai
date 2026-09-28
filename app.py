@@ -711,62 +711,78 @@ elif mode == "📸 Scan Screenshot":
             use_container_width=True
         )
 
-        if st.button(
-            "🔎 EXTRACT & ANALYZE",
-            use_container_width=True
-        ):
+        st.info("🔎 Analyzing screenshot...")
 
-            with st.spinner(
-                "Reading screenshot..."
-            ):
+        with st.spinner("Reading screenshot with OCR..."):
 
-                extracted = ocr_image(image)
+            extracted = ocr_image(image)
 
-            st.markdown("### 📝 Extracted Text")
+        st.markdown("### 📝 Extracted Text")
+
+        if extracted.strip():
 
             st.text_area(
-                "OCR",
+                "Detected Text",
                 extracted,
                 height=160
             )
 
-            if extracted.strip():
+            result = analyze_message(extracted)
 
-                result = analyze_message(
-                    extracted
+            c1, c2, c3 = st.columns(3)
+
+            c1.metric(
+                "Risk",
+                f"{result['risk']}/100"
+            )
+
+            c2.metric(
+                "Threat",
+                result["level"]
+            )
+
+            c3.metric(
+                "Scam Type",
+                result["type"]
+            )
+
+            if result["level"] in [
+                "CRITICAL", "HIGH"
+            ]:
+
+                st.error(
+                    "🚨 Suspicious scam characteristics detected."
                 )
 
-                c1, c2, c3 = st.columns(3)
+            elif result["level"] == "MEDIUM":
 
-                c1.metric(
-                    "Risk",
-                    f"{result['risk']}/100"
+                st.warning(
+                    "⚠️ Verify before interacting."
                 )
 
-                c2.metric(
-                    "Threat",
-                    result["level"]
+            else:
+
+                st.success(
+                    "🟢 No strong scam indicators detected."
                 )
 
-                c3.metric(
-                    "Scam Type",
-                    result["type"]
+            st.markdown("### 🧬 Scam DNA")
+
+            for name, value in result["dna"].items():
+
+                st.write(
+                    f"**{name}: {value}%**"
                 )
 
-                if result["level"] in [
-                    "CRITICAL", "HIGH"
-                ]:
-                    st.error(
-                        "🚨 Suspicious scam characteristics detected."
-                    )
-                elif result["level"] == "MEDIUM":
-                    st.warning(
-                        "⚠️ Verify before interacting."
-                    )
-                else:
-                    st.success(
-                        "🟢 No strong scam indicators detected."
-                    )
+                st.progress(
+                    min(value, 100)
+                )
+
+        else:
+
+            st.warning(
+                "⚠️ No readable text detected in this screenshot."
+            )
 
 elif mode == "🔗 Check URL":
 
