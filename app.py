@@ -417,26 +417,12 @@ def analyze_message(message):
         "urls": url_results
     }
 
-@st.cache_resource
-def get_reader():
-
-    import easyocr
-
-    return easyocr.Reader(
-        ["en"],
-        gpu=False
-    )
-
 def ocr_image(image):
+    import pytesseract
 
-    reader = get_reader()
+    text = pytesseract.image_to_string(image)
 
-    text = reader.readtext(
-        np.array(image),
-        detail=0
-    )
-
-    return " ".join(text)
+    return text.strip()
 
 SCENARIOS = {
     "🏦 Bank KYC Scam": {
