@@ -55,7 +55,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-MODEL_DIR = "/content/scamshield/models"
+MODEL_DIR = "." 
 
 model = joblib.load(
     MODEL_DIR + "/scam_classifier.pkl"
